@@ -117,8 +117,9 @@
         var $videoSrc;
         $('.btn-play').click(function () {
             $videoSrc = $(this).data("src");
+            console.log($videoSrc); // 여기로 이동 ( 버튼 클릭 해 실행되었을 때만 콘솔창에 보려고 )
         });
-        console.log($videoSrc);
+        //console.log($videoSrc); //이땐 $videoSrc 아직 설정되지 않아서 undefined 출력되었음
 
         $('#videoModal').on('shown.bs.modal', function (e) {
             $("#video").attr('src', $videoSrc + "?autoplay=1&amp;modestbranding=1&amp;showinfo=0");

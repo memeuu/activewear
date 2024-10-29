@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eon.activewear.member.mapper.MemberMapper">
+
+<!-- 회원가입 -->
+    <insert id="insertMember" parameterType="member" useGeneratedKeys="true" keyProperty="memCode">
+        INSERT INTO MEMBER
+            ( id
+            , pwd
+            , mem_name
+            , phone
+            , email
+            , birth
+            , gender
+            , mem_postal_code
+            , mem_address
+            , mem_address_detail
+            , terms_agreed
+            , is_verified
+            )
+        VALUES
+            ( #{id}
+            , #{pwd}
+            , #{memName}
+            , #{phone}
+            , #{email}
+            , #{birth}
+            , #{gender}
+            , #{memPostalCode}
+            , #{memAddress}
+            , #{memAddressDetail}
+            , #{termsAgreed}
+            , #{isVerified}
+            )
+    </insert>
+
+    <!-- 아이디 중복체크 -->
+    <select id="getSavedId" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE id = #{id};
+    </select>
+
+</mapper>

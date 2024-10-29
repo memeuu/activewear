@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html th:replace="~{common/layout/defaultLayout :: layout(~{::body}, ~{::title}, null)}" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{common/layout/defaultLayout :: layout(~{::section}, ~{::title}, null, null)}" xmlns:th="http://www.thymeleaf.org">
 
     <head>
         <title>메인페이지</title>
     </head>
 
-    <body>
+    <section>
 
         <!--header 부분 -->
 
@@ -1004,6 +1004,6 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
-    </body>
+    </section>
 
 </html>

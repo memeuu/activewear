@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html th:fragment="layout(content, title, links=${links})" xmlns:th="http://www.thymeleaf.org">
-
+<!--<html th:fragment="layout(section, title, links=${links})" xmlns:th="http://www.thymeleaf.org">-->
+<html th:fragment="layout(section, title, links, script)" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{common/fragments/head :: head(${title}, ${links})}"></head>
 
 <body>
+<!--<div th:text="${links != null && links != '' ? links : '링크없음'}"></div>-->
+
     <!-- header -->
     <header th:replace="~{common/fragments/header::header}"></header>
-    <!-- content -->
-    <div th:replace="${content}"></div>
+    <!-- section -->
+    <section th:replace="${section}"></section>
     <!-- footer -->
     <footer th:replace="~{common/fragments/footer::footer}"></footer>
 
-    <!--javascript-->
-    <div th:replace="~{common/fragments/scripts :: scripts}"></div>
+    <!--script-->
+    <script th:replace="~{common/fragments/scripts :: scripts(${script})}"></script>
 </body>
 </html>

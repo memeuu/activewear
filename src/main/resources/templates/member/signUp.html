@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html th:replace="~{common/layout/defaultLayout :: layout(~{::section}, ~{::title}, ~{::link}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/pages/signUp.css}">
+</head>
+<body>
+    <section>
+
+    <!--header 부분-->
+
+        <!-- Single Page Header start -->
+        <div class="container-fluid page-header py-5">
+            <h1 class="text-center text-white display-6">회원가입</h1>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="#">home</a></li>
+                <li class="breadcrumb-item"><a href="#">sign up</a></li>
+            </ol>
+        </div>
+        <!-- Single Page Header End -->
+
+
+        <!-- SignUp Page Start -->
+        <div class="container-fluid py-5">
+            <div class="container py-5">
+                <!-- < Form 태그 시작 > -->
+                <form id="signupForm" action="" th:action th:object="${member}" method="post">
+                    <div class="row g-5 center">
+                        <div class="col-md-12 col-lg-12 col-xl-7">
+                            <div class="info"><sup>*</sup> 필수 입력사항</div><br><br>
+
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-item w-100">
+                                        <label for="id" class="bold">아이디<sup>*</sup></label>
+                                        <input type="text" id="id" th:field="*{id}" class="form-control" placeholder="아이디 입력" autofocus/>
+                                        <div id="idError" class="field-error">아이디 오류 메시지</div>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-md-12 col-lg-12 my-3">
+                                    <div class="form-item w-100 my-3">
+                                        <button type="button" class="btn border-secondary px-4 text-primary" @click="checkID()">중복확인</button>
+                                    </div>
+                                </div> -->
+                            </div>
+
+                            <div class="form-item col-lg-12">
+                                <label for="pwd" class="bold">비밀번호<sup>*</sup></label>
+                                <input type="password" id="pwd" th:field="*{pwd}" class="form-control" placeholder="비밀번호 입력">
+                            </div>
+                            <div class="form-item col-lg-12 my-3">
+                                <!-- <label class="bold">비밀번호 확인<sup>*</sup></label> -->
+                                <input type="password" id="pwdCheck" class="form-control" placeholder="비밀번호 확인">
+                                <div id="pwdError" class="field-error">비밀번호 오류 메시지</div>
+                            </div>
+
+                            <div class="form-item col-lg-12">
+                                <label for="name" class="bold">이름<sup>*</sup></label>
+                                <input type="text" id="name" th:field="*{memName}" class="form-control" placeholder="이름 입력">
+                                <div id="nameError" class="field-error">이름 오류 메시지</div>
+                            </div>
+
+                            <div class="form-item col-lg-12 my-3">
+                                <label for="email" class="bold">이메일</label>
+                                <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="[선택] 이메일주소 (비밀번호 찾기 등 본인 확인용)">
+                                <div id="emailError" class="field-error">이메일 오류 메시지</div>
+                            </div>
+
+                            <div class="form-item col-lg-12 my-3">
+                                <label for="phone" class="bold">휴대전화<sup>*</sup></label>
+                                <input type="text" id="phone" th:field="*{phone}" class="form-control" placeholder="'-'없이 숫자만 입력">
+                                <div id="phoneError" class="field-error">휴대전화 오류 메시지</div>
+                            </div>
+                            <!-- <div class="row"> -->
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-item w-100">
+                                        <label for="birth" class="bold">생년월일<sup></sup></label>
+                                        <input type="text" id="birth" th:field="*{birth}" class="form-control" placeholder="생년월일 8자리 (예시 : 19000101)">
+                                        <div id="birthError" class="field-error">생년월일 오류 메시지</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-item w-100">
+                                        <label class="bold">성별<sup></sup></label><br>
+                                        <th:block th:each="gender, i : ${genderTypes}">
+                                            <input type="radio" th:id="'btnradio' + ${i.index}" name="gender" th:field="*{gender}" th:value="${gender.name()}" th:checked="${gender.name() == member.gender.name()}" class="btn-check" autocomplete="off"/>
+                                            <label th:for="'btnradio' + ${i.index}" class="btn btn-outline-primary" th:text="${gender.name()}"></label>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            <!-- </div> -->
+                            <!-- <div class="row">
+                                <div class="col-md-12 col-lg-12 my-3">
+                                    <div class="form-item w-100">
+                                        <label class="bold">기본주소<sup>*</sup></label>
+                                        <input type="text" id="postcode" th:field="*{memPostalCode}" class="form-control" placeholder="우편번호" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-item w-100"><br><br>
+                                        <div>
+                                            <OpenPostcode @postcode="getCode" />
+                                        </div> -->
+                                        <!-- <button type="button" class="btn border-secondary px-4 text-primary" @click="openPostcode()">우편번호 검색</button> -->
+                                    <!-- </div>
+                                </div>
+                            </div> -->
+                            <!-- <div class="form-item">
+                                <input type="text" id="address" th:field="*{memAddress}" class="form-control" placeholder="도로명주소" readonly>
+                                <input type="text" id="address_detail" th:field="*{memAddressDetail}" class="form-control my-3" placeholder="상세주소">
+                            </div> -->
+                            <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+                                <button type="submit" class="btn btn-primary2 border-secondary py-3 px-4 text-uppercase w-100">회원가입</button>
+                            </div><br>
+                            <!--<div class="info" v-show="loginStatus"><router-link to="/withdraw">회원탈퇴 ></router-link></div>-->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- SignUp Page End -->
+
+    <!-- Footer 부분 -->
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+
+    </section>
+
+    <script th:src="@{/js/signUp.js}" src="js/signUp.js"></script>
+</body>
+
+</html>
