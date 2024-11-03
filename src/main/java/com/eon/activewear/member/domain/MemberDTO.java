@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /*
-    Bean Validation 기능 사용
+    Bean Validation 기능
     - @NotEmpty: 컬렉션 타입에 대한 검증으로, 컬렉션이 비어있지 않은지 확인
     - @NotNull: 객체에 대한 검증으로, null 값만 체크
     - @NotBlank: 문자열에 대한 검증으로, null / 빈 문자열 "" / 공백만 있는 문자열 " " 모두 체크
