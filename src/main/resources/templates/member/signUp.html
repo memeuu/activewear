@@ -36,6 +36,10 @@
                                         <label for="id" class="bold">아이디<sup>*</sup></label>
                                         <input type="text" id="id" th:field="*{id}" class="form-control" placeholder="아이디 입력" autofocus/>
                                         <div id="idError" class="field-error">아이디 오류 메시지</div>
+                                        <div th:if="${duplicateError}" class="alert alert-danger">
+                                            <span th:text="${duplicateError}"></span>
+                                        </div>
+                                        <!-- <div th:if="${duplicateError}" class="alert alert-danger" th:text="${duplicateError}"></div>  -->
                                     </div>
                                 </div>
                                 <!-- <div class="col-md-12 col-lg-12 my-3">

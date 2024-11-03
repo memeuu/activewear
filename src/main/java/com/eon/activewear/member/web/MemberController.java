@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,16 +32,23 @@ public class MemberController {
     }
 
     //회원가입 기능
+    //testcontainers로 통합테스트 test중
     @PostMapping("/signup")
     public String signUp(MemberDTO member) {
         memberService.saveMember(member);
         return "redirect:/";
     }
 
-    @GetMapping("/index")
-    public String index() {
-        return "index"; // templates/index.html을 반환
-    }
+//    @PostMapping("/signup")
+//    public String signUp(MemberDTO member, RedirectAttributes redirectAttributes) {
+//        int result = memberService.saveMember(member);
+//
+//        if (result == 0) {
+//            redirectAttributes.addFlashAttribute("duplicateError", "사용할 수 없는 아이디입니다. 다른 아이디를 입력해 주세요.");
+//            return "redirect:/members/signup";
+//        }
+//        return "redirect:/";
+//    }
 
     //아이디 중복 체크 ( AJAX 요청 )
     @GetMapping("/checkId")
