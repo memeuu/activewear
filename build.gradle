@@ -27,15 +27,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.mindrot:jbcrypt:0.4' //비밀번호 암호화(Bcrypt로 솔트)
 
+	// 메인 코드용 Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//< DB관련 >
+	// DB 관련
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3' //MyBatis
 	runtimeOnly 'mysql:mysql-connector-java:8.0.33' // MySQL Connector
+
+// < test >
+	// 테스트 코드용 Lombok
+	testImplementation 'org.projectlombok:lombok' //testCompile은 deprecated 되었음 (Gradle 3.x 이하 버전에서 사용되던 방식)
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1' // JUnit5
+	testImplementation 'org.testcontainers:junit-jupiter:1.20.3' // Testcontainers
+	testImplementation "org.testcontainers:mysql:1.20.3"
+
 }
 
 tasks.named('test') {
