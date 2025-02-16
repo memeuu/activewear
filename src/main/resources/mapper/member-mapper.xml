@@ -42,4 +42,74 @@
         WHERE id = #{id};
     </select>
 
+
+<!--=========================================-->
+    <!-- 전체 회원 목록 조회 -->
+    <select id="getAllMembers" resultType="member">
+        SELECT mem_code
+             , id
+             , mem_name
+             , phone
+             , email
+             , birth
+             , gender
+             , mem_postal_code
+             , mem_address
+             , mem_address_detail
+             , terms_agreed
+             , is_verified
+        FROM member;
+    </select>
+
+    <!-- 검색조건 회원 목록 조회 (성별 & 이름) -->
+<!--    <select id="getFilteredMembers" resultType="com.eon.activewear.member.domain.MemberDTO">-->
+<!--        SELECT mem_code-->
+<!--             , id-->
+<!--             , mem_name-->
+<!--             , phone-->
+<!--             , email-->
+<!--             , birth-->
+<!--             , gender-->
+<!--             , mem_postal_code-->
+<!--             , mem_address-->
+<!--             , mem_address_detail-->
+<!--             , terms_agreed-->
+<!--             , is_verified-->
+<!--        FROM member-->
+<!--        WHERE 1=1-->
+<!--        <if test="gender != null and gender != ''">-->
+<!--            AND gender = #{gender}-->
+<!--        </if>-->
+<!--        <if test="memName != null and memName != ''">-->
+<!--            AND mem_name LIKE CONCAT('%', #{memName}, '%')-->
+<!--        </if>-->
+<!--    </select>-->
+    <select id="getFilteredMembers" resultType="member">
+        SELECT mem_code
+        , id
+        , mem_name
+        , phone
+        , email
+        , birth
+        , gender
+        , mem_postal_code
+        , mem_address
+        , mem_address_detail
+        , terms_agreed
+        , is_verified
+        FROM member
+        <include refid="memberCondition"></include>
+    </select>
+
+    <!-- 검색 조건 (회원 목록) -->
+    <sql id="memberCondition">
+        <where>
+            <if test="gender != null and gender != ''">
+                gender = #{gender}
+            </if>
+            <if test="memName != null and memName != ''">
+                AND mem_name LIKE '%' || #{memName} || '%'
+            </if>
+        </where>
+    </sql>
 </mapper>

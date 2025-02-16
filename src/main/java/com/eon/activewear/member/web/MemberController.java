@@ -3,6 +3,8 @@ package com.eon.activewear.member.web;
 import com.eon.activewear.member.domain.Gender;
 import com.eon.activewear.member.domain.MemberDTO;
 import com.eon.activewear.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -60,15 +63,51 @@ public class MemberController {
         response.put("isDuplicate", count != 0);
         return ResponseEntity.ok(response); // 항상 200 OK
     }
-    
+
     //성별 Gender Enum 타입
     @ModelAttribute("genderTypes")
     public Gender[] genderTypes() {
         return Gender.values();
     }
 
+//===================================================================
+    // 회원 목록 페이지 이동 추가
+    @GetMapping("/listPage")
+    public String memberListPage() {
+        return "member/list";
+    }
 
+    /*
+        전체 회원 목록 조회
+    */
+    @GetMapping("/list")
+    @ResponseBody  // JSON 응답으로 반환하도록 추가
+    public List<MemberDTO> getMemberList() {
+        return memberService.getMemberList();
+    }
 
+    /*
+        성별 & 이름 검색 기능 추가 (필터링)
+    */
+    @GetMapping("/filter")
+    @ResponseBody
+    public List<MemberDTO> getFilteredMembers(
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String memName) {
+        return memberService.getFilteredMembers(gender, memName);
+    }
+
+    /*
+        Excel 다운로드
+    */
+    @PostMapping("/exportExcel")
+    public void exportExcel(@RequestBody Map<String, Object> filterParams,
+                            HttpServletRequest request,
+                            HttpServletResponse response) throws Exception {
+        String gender = (String) filterParams.get("gender");
+        String memName = (String) filterParams.get("memName");
+        memberService.exportToExcel(gender, memName, request, response);
+    }
 
 
 }//end of class.

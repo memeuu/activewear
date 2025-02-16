@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3' //MyBatis
 	runtimeOnly 'mysql:mysql-connector-java:8.0.33' // MySQL Connector
 
+	// Apache POI 라이브러리 ( Excel )
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
 // < test >
 	// 테스트 코드용 Lombok
 	testImplementation 'org.projectlombok:lombok' //testCompile은 deprecated 되었음 (Gradle 3.x 이하 버전에서 사용되던 방식)

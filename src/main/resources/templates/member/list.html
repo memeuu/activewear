@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 목록</title>
+
+    <!-- Toast Grid CDN -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css">
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+</head>
+<body>
+<h1>회원 목록</h1>
+
+<!-- 필터링 조건 -->
+<label for="gender">성별:</label>
+<select id="gender">
+    <option value="">전체</option>
+    <option value="남">남</option>
+    <option value="여">여</option>
+    <option value="선택안함">선택안함</option>
+</select>
+
+<label for="memName">이름 검색:</label>
+<input type="text" id="memName" placeholder="이름 입력">
+
+<button onclick="filterMembers()">검색</button>
+<button onclick="downloadExcel()">Excel 다운로드</button>
+
+<!-- Toast Grid -->
+<div id="grid"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const grid = new tui.Grid({
+            el: document.getElementById("grid"),
+            data: [],
+            scrollX: false,
+            scrollY: true,
+            columns: [
+                { header: "회원 코드", name: "memCode" },
+                { header: "아이디", name: "id" },
+                { header: "이름", name: "memName" },
+                { header: "전화번호", name: "phone" },
+                { header: "이메일", name: "email" },
+                { header: "생년월일", name: "birth" },
+                { header: "성별", name: "gender" },
+                { header: "주소", name: "memAddress" }
+            ]
+        });
+
+        function loadMembers(gender = "", memName = "") {
+            fetch(`/members/filter?gender=${gender}&memName=${memName}`)
+                .then(response => response.json())
+                .then(data => grid.resetData(data));
+        }
+
+        window.filterMembers = function() {
+            const gender = document.getElementById("gender").value;
+            const memName = document.getElementById("memName").value;
+            loadMembers(gender, memName);
+        };
+
+        window.downloadExcel = function() {
+            const gender = document.getElementById("gender").value;
+            const memName = document.getElementById("memName").value;
+            fetch("/members/exportExcel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ gender, memName })
+            }).then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error("Excel 다운로드 실패");
+            }).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "members.xlsx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }).catch(error => console.error(error));
+        };
+
+        loadMembers();
+    });
+</script>
+</body>
+</html>
