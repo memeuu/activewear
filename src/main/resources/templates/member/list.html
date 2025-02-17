@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 목록</title>
 
-    <!-- Toast Grid CDN -->
+    <!-- Toast UI Grid -->
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css">
+
+    <!-- xlsx 라이브러리 (SheetJS) -->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-style@0.8.13/dist/xlsx.full.min.js"></script><!--style sheet-->
+    <script>
+        window.XLSX = XLSX; // TOAST UI Grid가 실행되기 전에 전역 등록
+    </script>
+
+    <!-- Toast UI Grid JS -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+
 </head>
 <body>
 <h1>회원 목록</h1>
@@ -24,14 +34,18 @@
 <label for="memName">이름 검색:</label>
 <input type="text" id="memName" placeholder="이름 입력">
 
-<button onclick="filterMembers()">검색</button>
-<button onclick="downloadExcel()">Excel 다운로드</button>
+<button id="filterBtn">검색</button>
+<button id="excelBtn">서버 Excel</button>
+<button id="toastExcelBtn">Toast Excel</button>
+<button id="styledExcelBtn">Styled Excel</button>
 
 <!-- Toast Grid -->
 <div id="grid"></div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+
+        // Grid 생성
         const grid = new tui.Grid({
             el: document.getElementById("grid"),
             data: [],
@@ -49,19 +63,28 @@
             ]
         });
 
+        // Toast Excel 기본 내보내기 options
+        const options = {
+            fileName: 'members_toast', // 파일명 지정
+            includeHiddenColumns: false, // 숨겨진 컬럼 제외
+            onlyFiltered: true, // 필터링된 데이터만 내보내기 (기본값)
+            onlySelected: false // 선택된 데이터만 내보내기 여부 (false면 전체)
+        };
+
+
         function loadMembers(gender = "", memName = "") {
             fetch(`/members/filter?gender=${gender}&memName=${memName}`)
                 .then(response => response.json())
                 .then(data => grid.resetData(data));
         }
 
-        window.filterMembers = function() {
+        function filterMembers() {
             const gender = document.getElementById("gender").value;
             const memName = document.getElementById("memName").value;
             loadMembers(gender, memName);
-        };
+        }
 
-        window.downloadExcel = function() {
+        function downloadExcel() {
             const gender = document.getElementById("gender").value;
             const memName = document.getElementById("memName").value;
             fetch("/members/exportExcel", {
@@ -74,15 +97,96 @@
                 }
                 throw new Error("Excel 다운로드 실패");
             }).then(blob => {
-                const url = window.URL.createObjectURL(blob);
+                const url = window.URL.createObjectURL(blob); //blob 데이터를 임시 URL로 변환 (서버에서 엑셀 파일 blob 형태로 응답)
                 const a = document.createElement("a");
                 a.href = url;
                 a.download = "members.xlsx";
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
+                window.URL.revokeObjectURL(url); // 메모리 정리
             }).catch(error => console.error(error));
-        };
+        }
+
+        // Excel download 스타일 적용
+        function downloadStyledExcel() {
+
+            const sheetData = [grid.getColumns().map(col => col.header)]; // 헤더 가져오기
+
+            grid.getData().forEach(row => {
+                sheetData.push([
+                    Number(row.memCode),     // 회원 코드 숫자로 변환
+                    row.id,                 // 아이디 문자열
+                    row.memName,             // 이름 문자열
+                    "'" + row.phone,         // 전화번호를 문자열로 처리 (앞에 ' 추가)
+                    row.email || "",         // 이메일 (빈 값 처리)
+                    row.birth ? new Date(row.birth).toISOString().split("T")[0] : "", // 날짜 포맷 YYYY-MM-DD
+                    row.gender,              // 성별
+                    row.memAddress || ""     // 주소 (빈 값 처리)
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(sheetData); // SheetJS로 시트 변환
+
+            // 열 너비 설정
+            ws['!cols'] = [
+                { wpx: 50 },  // 회원 코드
+                { wpx: 100 }, // 아이디
+                { wpx: 100 }, // 이름
+                { wpx: 120 }, // 전화번호
+                { wpx: 200 }, // 이메일
+                { wpx: 100 }, // 생년월일
+                { wpx: 80 },  // 성별
+                { wpx: 200 }  // 주소
+            ];
+
+            // 테두리 스타일 정의 (얇은 검은색 선)
+            const borderStyle = {
+                top: { style: "thin", color: { rgb: "000000" } },
+                bottom: { style: "thin", color: { rgb: "000000" } },
+                left: { style: "thin", color: { rgb: "000000" } },
+                right: { style: "thin", color: { rgb: "000000" } }
+            };
+
+            // 헤더 스타일 적용
+            const range = XLSX.utils.decode_range(ws['!ref']); //시트 전체 범위를 가져옴 (A1부터 마지막 셀까지)
+
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
+                if (!ws[cell_address]) continue;
+                ws[cell_address].s = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "4F81BD" } },
+                    alignment: { horizontal: "center" }
+                };
+            }
+
+            // 전체 시트를 반복하면서 모든 셀에 테두리 추가
+            for (let R = range.s.r; R <= range.e.r; ++R) {  // 행 반복
+                for (let C = range.s.c; C <= range.e.c; ++C) {  // 열 반복
+                    const cell_address = XLSX.utils.encode_cell({ r: R, c: C });  // 셀 주소 변환 (예: A1, B2)
+                    if (!ws[cell_address]) continue;  // 셀이 비어 있으면 건너뜀
+
+                    if (!ws[cell_address].s) ws[cell_address].s = {};  // 셀 스타일 객체가 없으면 생성
+                    ws[cell_address].s.border = borderStyle;  // 테두리 스타일 적용
+                }
+            }
+
+            // 엑셀 파일 저장
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "회원목록");
+            XLSX.writeFile(wb, "styled_members.xlsx");
+        }
+
+        // Toast Excel 기본 내보내기 기능
+        function downloadToastExcel() {
+            grid.export('xlsx', options);
+        }
+
+        document.getElementById("filterBtn").addEventListener("click", filterMembers);
+        document.getElementById("excelBtn").addEventListener("click", downloadExcel);
+        document.getElementById("toastExcelBtn").addEventListener("click", downloadToastExcel);
+        document.getElementById("styledExcelBtn").addEventListener("click", downloadStyledExcel);
 
         loadMembers();
     });
